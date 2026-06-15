@@ -29,8 +29,12 @@ function App() {
     setFacilityData(null);
 
     try {
+      const encodedCCN = encodeURIComponent(ccn.trim());
+      // const res = await fetch(
+      //   `https://data.cms.gov/provider-data/api/1/datastore/query/4pq5-n9py/0?filters%5BCMS%20Certification%20Number%20%28CCN%29%5D=${encodedCCN}&limit=1`,
+      // );
       const res = await fetch(
-        `/cms-api/datastore/query/4pq5-n9py/0?filters[CMS Certification Number (CCN)]=${ccn.trim()}&limit=1`,
+        `/cms-api/datastore/query/4pq5-n9py/0?filters%5BCMS%20Certification%20Number%20%28CCN%29%5D=${ccn.trim()}&limit=1`,
       );
       const data = await res.json();
 
@@ -64,22 +68,13 @@ function App() {
     const pdf = new jsPDF("p", "mm", "a4");
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    // Add the screenshot image
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-    // Add clickable link covering the entire Medicare row area
     const medicareUrl =
       "https://www.medicare.gov/care-compare/details/nursing-home/" + ccn;
-
-    // This places a clickable zone at the bottom of the report
-    // x=40, y=pdfHeight-14, width=120, height=10
     pdf.link(40, pdfHeight - 14, 120, 10, { url: medicareUrl });
-
     pdf.save(`Facility_Assessment_${ccn}.pdf`);
   };
 
-  // ✅ FIXED: using correct lowercase API field names
   const facilityName =
     manualInputs.facilityNameOverride ||
     (facilityData ? facilityData["provider_name"] : "");
@@ -92,7 +87,6 @@ function App() {
         Medelite Facility Assessment Report Generator
       </h1>
 
-      {/* Step 1: CCN Input */}
       <div className="input-section">
         <h2>Step 1: Enter Facility CCN</h2>
         <div className="ccn-row">
@@ -114,7 +108,6 @@ function App() {
         {error && <p className="error">{error}</p>}
       </div>
 
-      {/* Step 2: Manual Inputs */}
       {facilityData && (
         <div className="input-section">
           <h2>Step 2: Fill in Internal Details</h2>
@@ -126,7 +119,6 @@ function App() {
               onChange={handleManualChange}
               placeholder={facilityData["provider_name"]}
             />
-
             <label>EMR System</label>
             <input
               name="emr"
@@ -134,7 +126,6 @@ function App() {
               onChange={handleManualChange}
               placeholder="e.g. PCC, MatrixCare"
             />
-
             <label>Current Census</label>
             <input
               name="currentCensus"
@@ -143,7 +134,6 @@ function App() {
               placeholder="e.g. 112"
               type="number"
             />
-
             <label>Type of Patient</label>
             <input
               name="patientType"
@@ -151,7 +141,6 @@ function App() {
               onChange={handleManualChange}
               placeholder="e.g. Long-term & Short-term"
             />
-
             <label>Previous Coverage from Medelite</label>
             <select
               name="previousCoverage"
@@ -161,7 +150,6 @@ function App() {
               <option>Yes</option>
               <option>No</option>
             </select>
-
             <label>Previous Provider Performance</label>
             <input
               name="previousPerformance"
@@ -169,7 +157,6 @@ function App() {
               onChange={handleManualChange}
               placeholder="e.g. About 30 patients/day"
             />
-
             <label>Medical Coverage</label>
             <input
               name="medicalCoverage"
@@ -178,14 +165,12 @@ function App() {
               placeholder="e.g. Optometry, PCP, Podiatry"
             />
           </div>
-
           <button onClick={downloadPDF} className="pdf-btn">
             ⬇ Download PDF
           </button>
         </div>
       )}
 
-      {/* Report Preview */}
       {facilityData && (
         <div ref={reportRef} className="report">
           <div className="report-header">
@@ -194,21 +179,18 @@ function App() {
             <h2>FACILITY ASSESSMENT SNAPSHOT</h2>
             <h3>{state}</h3>
           </div>
-
           <table className="report-table">
             <tbody>
               <tr>
                 <td>
                   <strong>Name of Facility</strong>
                 </td>
-
                 <td>{facilityName}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Location</strong>
                 </td>
-
                 <td>{facilityData["location"]}</td>
               </tr>
               <tr>
@@ -221,7 +203,6 @@ function App() {
                 <td>
                   <strong>Census Capacity</strong>
                 </td>
-
                 <td>{facilityData["number_of_certified_beds"]}</td>
               </tr>
               <tr>
@@ -258,28 +239,24 @@ function App() {
                 <td>
                   <strong>Overall Star Rating</strong>
                 </td>
-
                 <td>{facilityData["overall_rating"]}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Health Inspection</strong>
                 </td>
-
                 <td>{facilityData["health_inspection_rating"]}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Staffing</strong>
                 </td>
-
                 <td>{facilityData["staffing_rating"]}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Quality of Resident Care</strong>
                 </td>
-
                 <td>{facilityData["qm_rating"]}</td>
               </tr>
               <tr>

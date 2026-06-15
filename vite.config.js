@@ -9,6 +9,7 @@ export default defineConfig({
       "/cms-api": {
         target: "https://data.cms.gov",
         changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/cms-api/, "/provider-data/api/1"),
       },
     },
