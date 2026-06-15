@@ -95,7 +95,6 @@ function App() {
 
     pdf.save(`Facility_Assessment_${ccn}.pdf`);
   };
-  s;
 
   // ✅ FIXED: using correct lowercase API field names
   const facilityName =
