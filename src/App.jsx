@@ -591,8 +591,17 @@ function App() {
       {facilityData && (
         <div ref={reportRef} className="report">
           <div className="report-header">
-            <h1>INFINITE</h1>
-            <p>Managed by MEDELITE</p>
+            <img
+              src="/Picture1.png"
+              alt="INFINITE Managed by MEDELITE"
+              style={{
+                width: "250px",
+                marginBottom: "10px",
+                backgroundColor: "white",
+                padding: "8px",
+                borderRadius: "4px",
+              }}
+            />
             <h2>FACILITY ASSESSMENT SNAPSHOT</h2>
             <h3>{state}</h3>
           </div>
