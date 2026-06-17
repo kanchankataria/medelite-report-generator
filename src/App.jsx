@@ -381,13 +381,27 @@ function App() {
     setManualInputs({ ...manualInputs, [e.target.name]: e.target.value });
   };
 
+  // const downloadPDF = async () => {
+  //   const element = reportRef.current;
+  //   const canvas = await html2canvas(element, { scale: 2 });
+  //   const imgData = canvas.toDataURL("image/png");
+  //   const pdf = new jsPDF("p", "mm", "a4");
+  //   const pdfWidth = pdf.internal.pageSize.getWidth();
+  //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  //   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //   const medicareUrl =
+  //     "https://www.medicare.gov/care-compare/details/nursing-home/" + ccn;
+  //   pdf.link(40, pdfHeight - 14, 120, 10, { url: medicareUrl });
+  //   pdf.save(`Facility_Assessment_${ccn}.pdf`);
+  // };
+
   const downloadPDF = async () => {
     const element = reportRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfWidth = 210; // A4 width in mm
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pdf = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
     const medicareUrl =
       "https://www.medicare.gov/care-compare/details/nursing-home/" + ccn;
