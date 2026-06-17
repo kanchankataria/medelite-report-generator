@@ -381,20 +381,6 @@ function App() {
     setManualInputs({ ...manualInputs, [e.target.name]: e.target.value });
   };
 
-  // const downloadPDF = async () => {
-  //   const element = reportRef.current;
-  //   const canvas = await html2canvas(element, { scale: 2 });
-  //   const imgData = canvas.toDataURL("image/png");
-  //   const pdf = new jsPDF("p", "mm", "a4");
-  //   const pdfWidth = pdf.internal.pageSize.getWidth();
-  //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-  //   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  //   const medicareUrl =
-  //     "https://www.medicare.gov/care-compare/details/nursing-home/" + ccn;
-  //   pdf.link(40, pdfHeight - 14, 120, 10, { url: medicareUrl });
-  //   pdf.save(`Facility_Assessment_${ccn}.pdf`);
-  // };
-
   const downloadPDF = async () => {
     const element = reportRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
@@ -430,6 +416,22 @@ function App() {
   const m522 = claimsData["522"];
   const m551 = claimsData["551"];
   const m552 = claimsData["552"];
+
+  const getStarStyle = (rating) => {
+    const r = parseInt(rating);
+    if (r >= 4) return { color: "#22a745", fontWeight: "bold" };
+    if (r === 3) return { color: "#f0a500", fontWeight: "bold" };
+    return { color: "#dc3545", fontWeight: "bold" };
+  };
+
+  const getIndicator = (facilityVal, avgVal) => {
+    const f = parseFloat(facilityVal);
+    const a = parseFloat(avgVal);
+    if (isNaN(f) || isNaN(a)) return "";
+    if (f < a) return " ✅";
+    if (f > a) return " ⚠️";
+    return " ➡️";
+  };
 
   return (
     <div className="app-container">
@@ -589,31 +591,52 @@ function App() {
                 <td>
                   <strong>Overall Star Rating</strong>
                 </td>
-                <td>{facilityData["overall_rating"]}</td>
+                <td style={getStarStyle(facilityData["overall_rating"])}>
+                  {"⭐".repeat(parseInt(facilityData["overall_rating"]))}{" "}
+                  {facilityData["overall_rating"]}
+                </td>
               </tr>
               <tr>
                 <td>
                   <strong>Health Inspection</strong>
                 </td>
-                <td>{facilityData["health_inspection_rating"]}</td>
+                <td
+                  style={getStarStyle(facilityData["health_inspection_rating"])}
+                >
+                  {facilityData["health_inspection_rating"]}
+                </td>
               </tr>
               <tr>
                 <td>
                   <strong>Staffing</strong>
                 </td>
-                <td>{facilityData["staffing_rating"]}</td>
+                <td style={getStarStyle(facilityData["staffing_rating"])}>
+                  {facilityData["staffing_rating"]}
+                </td>
               </tr>
               <tr>
                 <td>
                   <strong>Quality of Resident Care</strong>
                 </td>
-                <td>{facilityData["qm_rating"]}</td>
+                <td style={getStarStyle(facilityData["qm_rating"])}>
+                  {facilityData["qm_rating"]}
+                </td>
               </tr>
               <tr>
                 <td>
                   <strong>Short Term Hospitalization</strong>
                 </td>
-                <td>{m521 ? fmt(m521["adjusted_score"]) : "N/A"}</td>
+                <td>
+                  {m521
+                    ? fmt(m521["adjusted_score"]) +
+                      getIndicator(
+                        m521["adjusted_score"],
+                        nationAvg?.[
+                          "percentage_of_short_stay_residents_who_were_rehospitalized__1d02"
+                        ],
+                      )
+                    : "N/A"}
+                </td>
               </tr>
               <tr>
                 <td>
@@ -647,7 +670,17 @@ function App() {
                 <td>
                   <strong>STR ED Visit</strong>
                 </td>
-                <td>{m522 ? fmt(m522["adjusted_score"]) : "N/A"}</td>
+                <td>
+                  {m522
+                    ? fmt(m522["adjusted_score"]) +
+                      getIndicator(
+                        m522["adjusted_score"],
+                        nationAvg?.[
+                          "percentage_of_short_stay_residents_who_had_an_outpatient_em_d911"
+                        ],
+                      )
+                    : "N/A"}
+                </td>
               </tr>
               <tr>
                 <td>
@@ -681,7 +714,17 @@ function App() {
                 <td>
                   <strong>LT Hospitalization</strong>
                 </td>
-                <td>{m551 ? fmtRate(m551["adjusted_score"]) : "N/A"}</td>
+                <td>
+                  {m551
+                    ? fmtRate(m551["adjusted_score"]) +
+                      getIndicator(
+                        m551["adjusted_score"],
+                        nationAvg?.[
+                          "number_of_hospitalizations_per_1000_longstay_resident_days"
+                        ],
+                      )
+                    : "N/A"}
+                </td>
               </tr>
               <tr>
                 <td>
@@ -715,7 +758,17 @@ function App() {
                 <td>
                   <strong>ED Visit</strong>
                 </td>
-                <td>{m552 ? fmtRate(m552["adjusted_score"]) : "N/A"}</td>
+                <td>
+                  {m552
+                    ? fmtRate(m552["adjusted_score"]) +
+                      getIndicator(
+                        m552["adjusted_score"],
+                        nationAvg?.[
+                          "number_of_outpatient_emergency_department_visits_per_1000_l_de9d"
+                        ],
+                      )
+                    : "N/A"}
+                </td>
               </tr>
               <tr>
                 <td>
