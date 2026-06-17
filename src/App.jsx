@@ -334,8 +334,10 @@ function App() {
         setLoading(false);
         return;
       }
+
       const f = data.results[0];
       setFacilityData(f);
+
       setManualInputs((prev) => ({ ...prev, facilityNameOverride: "" }));
 
       const facilityState = f["state"];
@@ -440,7 +442,7 @@ function App() {
       </h1>
 
       <div className="input-section">
-        <h2>Step 1: Enter Facility CCN</h2>
+        <h2>Enter Facility CCN</h2>
         <div className="ccn-row">
           <input
             type="text"
@@ -457,12 +459,27 @@ function App() {
             {loading ? "Fetching..." : "Fetch Facility Data"}
           </button>
         </div>
-        {error && <p className="error">{error}</p>}
+        {/* {error && <p className="error">{error}</p>} */}
+        {error && (
+          <div className="error-box">
+            <p>❌ {error}</p>
+            <p style={{ fontSize: "13px", color: "#666" }}>
+              💡 Tip: Find any facility's CCN at{" "}
+              <a
+                href="https://www.medicare.gov/care-compare"
+                target="_blank"
+                rel="noreferrer"
+              >
+                medicare.gov/care-compare
+              </a>
+            </p>
+          </div>
+        )}
       </div>
 
       {facilityData && (
         <div className="input-section">
-          <h2>Step 2: Fill in Internal Details</h2>
+          <h2>Fill in Internal Details</h2>
           <div className="form-grid">
             <label>Facility Name Override (optional)</label>
             <input
