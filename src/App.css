@@ -217,3 +217,95 @@ body {
   width: 55%;
   height: 20px;
 }
+
+/* ---- MOBILE RESPONSIVE STYLES ---- */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .app-title {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .input-section {
+    padding: 15px;
+  }
+
+  .ccn-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ccn-input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .fetch-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid label {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .form-grid input,
+  .form-grid select {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .pdf-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  .report {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  .report-table {
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .report-table td {
+    padding: 6px 8px;
+    word-break: break-word;
+  }
+
+  .report-header h1 {
+    font-size: 24px;
+  }
+
+  .report-header h2 {
+    font-size: 16px;
+  }
+
+  .report-header h3 {
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .report-table {
+    font-size: 11px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+}
