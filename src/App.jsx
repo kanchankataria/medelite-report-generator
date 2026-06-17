@@ -286,12 +286,22 @@
 
 // export default App;
 
+// ============================================================
+// Medelite Facility Assessment Report Generator
+// Built by: FNU Kanchan
+// Description: A React app that lets users enter a nursing
+// home CCN to fetch public CMS data, fill in internal details,
+// and download a polished PDF report.
+// ============================================================
+
 import { useState, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./App.css";
 
 function App() {
+  // ---- STATE VARIABLES ----
+  // These store data that changes when the user interacts with the app
   const [ccn, setCcn] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -299,6 +309,8 @@ function App() {
   const [claimsData, setClaimsData] = useState({});
   const [nationAvg, setNationAvg] = useState(null);
   const [stateAvg, setStateAvg] = useState(null);
+
+  // Manual inputs filled in by the user (not available in CMS API)
   const [manualInputs, setManualInputs] = useState({
     facilityNameOverride: "",
     emr: "",
@@ -308,13 +320,23 @@ function App() {
     previousPerformance: "",
     medicalCoverage: "",
   });
+
+  // reportRef points to the HTML report section so we can convert it to PDF
   const reportRef = useRef();
 
+  // ============================================================
+  // FUNCTION: fetchFacilityData
+  // Triggered when user clicks "Fetch Facility Data"
+  // Makes 4 API calls to CMS to get all needed data
+  // ============================================================
   const fetchFacilityData = async () => {
+    // Validate that CCN is not empty
     if (!ccn.trim()) {
       setError("Please enter a CCN number.");
       return;
     }
+
+    // Reset all previous data before new fetch
     setLoading(true);
     setError("");
     setFacilityData(null);
@@ -324,7 +346,9 @@ function App() {
 
     try {
       // 1. Main facility info
-
+      // ---- API CALL 1: Main Facility Info ----
+      // Dataset: 4pq5-n9py (NH Provider Information)
+      // Returns: facility name, location, beds, star ratings, etc.
       const res = await fetch(
         `/cms-api/datastore/query/4pq5-n9py/0?conditions[0][property]=cms_certification_number_ccn&conditions[0][value]=${ccn.trim()}&conditions[0][operator]==&limit=1`,
       );
@@ -343,6 +367,10 @@ function App() {
       const facilityState = f["state"];
 
       // 2. Claims-based quality measures for this facility
+      // ---- API CALL 2: Claims-Based Quality Measures ----
+      // Dataset: ijh5-nb2v (Medicare Claims Quality Measures)
+      // Returns: hospitalization and ED visit metrics for this facility
+      // Measure codes: 521=STR Hosp, 522=STR ED, 551=LT Hosp, 552=LT ED
       const claimsRes = await fetch(
         `/cms-api/datastore/query/ijh5-nb2v/0?conditions[0][property]=cms_certification_number_ccn&conditions[0][value]=${ccn.trim()}&conditions[0][operator]==&limit=10`,
       );
@@ -356,6 +384,10 @@ function App() {
       setClaimsData(measures);
 
       // 3. National averages
+
+      // ---- API CALL 3: National Averages ----
+      // Dataset: xcdc-v8bm (State & US Averages)
+      // Filter: state_or_nation = "NATION" to get US-wide averages
       const nationRes = await fetch(
         `/cms-api/datastore/query/xcdc-v8bm/0?conditions[0][property]=state_or_nation&conditions[0][value]=NATION&conditions[0][operator]==&limit=1`,
       );
@@ -365,6 +397,10 @@ function App() {
       }
 
       // 4. State averages
+
+      // ---- API CALL 4: State Averages ----
+      // Dataset: xcdc-v8bm (State & US Averages)
+      // Filter: state_or_nation = facility's state (e.g. "FL")
       const stateRes = await fetch(
         `/cms-api/datastore/query/xcdc-v8bm/0?conditions[0][property]=state_or_nation&conditions[0][value]=${facilityState}&conditions[0][operator]==&limit=1`,
       );
@@ -383,6 +419,11 @@ function App() {
     setManualInputs({ ...manualInputs, [e.target.name]: e.target.value });
   };
 
+  // ============================================================
+  // FUNCTION: downloadPDF
+  // Converts the report HTML section to a canvas image,
+  // then generates a PDF file and triggers browser download
+  // ============================================================
   const downloadPDF = async () => {
     const element = reportRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
@@ -426,6 +467,10 @@ function App() {
     return { color: "#dc3545", fontWeight: "bold" };
   };
 
+  // Returns emoji indicator comparing facility value to national average
+  // ✅ = facility performing better than national avg (lower is better for these metrics)
+  // ⚠️ = facility performing worse than national avg
+  // ➡️ = same as national avg
   const getIndicator = (facilityVal, avgVal) => {
     const f = parseFloat(facilityVal);
     const a = parseFloat(avgVal);
@@ -435,6 +480,9 @@ function App() {
     return " ➡️";
   };
 
+  // ============================================================
+  // RENDER: The UI layout
+  // ============================================================
   return (
     <div className="app-container">
       <h1 className="app-title">
