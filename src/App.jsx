@@ -703,6 +703,14 @@ function App() {
     return " ➡️";
   };
 
+  // Returns color class and label based on star rating for cards
+  const getCardInfo = (rating) => {
+    const r = parseInt(rating);
+    if (r >= 4) return { colorClass: "green", label: "Good" };
+    if (r === 3) return { colorClass: "yellow", label: "Average" };
+    return { colorClass: "red", label: "Poor" };
+  };
+
   // ============================================================
   // RENDER: The UI layout
   // ============================================================
@@ -818,6 +826,33 @@ function App() {
         </div>
       )}
 
+      {/* Star Rating Cards - web app only, NOT in PDF */}
+      {facilityData && (
+        <div className="cards-container">
+          {[
+            { title: "Overall Rating", value: facilityData["overall_rating"] },
+            {
+              title: "Health Inspection",
+              value: facilityData["health_inspection_rating"],
+            },
+            { title: "Staffing", value: facilityData["staffing_rating"] },
+            { title: "Quality of Care", value: facilityData["qm_rating"] },
+          ].map((item) => {
+            const { colorClass, label } = getCardInfo(item.value);
+            return (
+              <div key={item.title} className={`rating-card ${colorClass}`}>
+                <div className="card-title">{item.title}</div>
+                <div className="card-stars">
+                  {"⭐".repeat(parseInt(item.value))}
+                </div>
+                <div className={`card-number ${colorClass}`}>{item.value}</div>
+                <div className={`card-label ${colorClass}`}>{label}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {facilityData && (
         <div ref={reportRef} className="report">
           <div className="report-header">
@@ -835,6 +870,7 @@ function App() {
             <h2>FACILITY ASSESSMENT SNAPSHOT</h2>
             <h3>{state}</h3>
           </div>
+
           <table className="report-table">
             <tbody>
               <tr>

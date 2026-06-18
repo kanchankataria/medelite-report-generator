@@ -218,6 +218,91 @@ body {
   height: 20px;
 }
 
+/* ---- STAR RATING CARDS ---- */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+  padding: 0 10px;
+}
+
+.rating-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid;
+  transition: transform 0.2s;
+}
+
+.rating-card:hover {
+  transform: translateY(-3px);
+}
+
+.rating-card.green {
+  border-top-color: #22a745;
+}
+.rating-card.yellow {
+  border-top-color: #f0a500;
+}
+.rating-card.red {
+  border-top-color: #dc3545;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.card-stars {
+  font-size: 16px;
+  margin: 6px 0;
+}
+
+.card-number {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 4px 0;
+}
+
+.card-number.green {
+  color: #22a745;
+}
+.card-number.yellow {
+  color: #f0a500;
+}
+.card-number.red {
+  color: #dc3545;
+}
+
+.card-label {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.card-label.green {
+  background: #d4edda;
+  color: #22a745;
+}
+.card-label.yellow {
+  background: #fff3cd;
+  color: #f0a500;
+}
+.card-label.red {
+  background: #f8d7da;
+  color: #dc3545;
+}
+
 /* ---- MOBILE RESPONSIVE STYLES ---- */
 @media (max-width: 768px) {
   .app-container {
@@ -307,5 +392,18 @@ body {
 
   .app-title {
     font-size: 16px;
+  }
+}
+
+/* Mobile responsive for cards */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
