@@ -297,6 +297,20 @@
 import { useState, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableRow,
+  TableCell,
+  TextRun,
+  WidthType,
+  AlignmentType,
+  ImageRun,
+  ExternalHyperlink,
+} from "docx";
+import { saveAs } from "file-saver";
 import "./App.css";
 
 function App() {
@@ -438,6 +452,215 @@ function App() {
     pdf.save(`Facility_Assessment_${ccn}.pdf`);
   };
 
+  const downloadWord = async () => {
+    // Fetch logo image and convert to base64 for Word doc
+    const logoResponse = await fetch("/Picture1.png");
+    const logoBlob = await logoResponse.blob();
+    const logoArrayBuffer = await logoBlob.arrayBuffer();
+
+    const rows = [
+      ["Name of Facility", facilityName],
+      ["Location", facilityData["location"] || ""],
+      ["EMR", manualInputs.emr],
+      ["Census Capacity", facilityData["number_of_certified_beds"] || ""],
+      ["Current Census", manualInputs.currentCensus],
+      ["Type of Patient", manualInputs.patientType],
+      ["Previous Coverage from Medelite", manualInputs.previousCoverage],
+      [
+        "Previous Provider Performance from Medelite",
+        manualInputs.previousPerformance,
+      ],
+      ["Medical Coverage", manualInputs.medicalCoverage],
+      ["Overall Star Rating", facilityData["overall_rating"] || ""],
+      ["Health Inspection", facilityData["health_inspection_rating"] || ""],
+      ["Staffing", facilityData["staffing_rating"] || ""],
+      ["Quality of Resident Care", facilityData["qm_rating"] || ""],
+      [
+        "Short Term Hospitalization",
+        m521 ? fmt(m521["adjusted_score"]) : "N/A",
+      ],
+      [
+        "STR National Avg. for Hospitalization",
+        nationAvg
+          ? fmt(
+              nationAvg[
+                "percentage_of_short_stay_residents_who_were_rehospitalized__1d02"
+              ],
+            )
+          : "N/A",
+      ],
+      [
+        "STR State Avg. for Hospitalization",
+        stateAvg
+          ? fmt(
+              stateAvg[
+                "percentage_of_short_stay_residents_who_were_rehospitalized__1d02"
+              ],
+            )
+          : "N/A",
+      ],
+      ["STR ED Visit", m522 ? fmt(m522["adjusted_score"]) : "N/A"],
+      [
+        "STR ED Visits National Avg.",
+        nationAvg
+          ? fmt(
+              nationAvg[
+                "percentage_of_short_stay_residents_who_had_an_outpatient_em_d911"
+              ],
+            )
+          : "N/A",
+      ],
+      [
+        "STR ED Visits State Avg.",
+        stateAvg
+          ? fmt(
+              stateAvg[
+                "percentage_of_short_stay_residents_who_had_an_outpatient_em_d911"
+              ],
+            )
+          : "N/A",
+      ],
+      ["LT Hospitalization", m551 ? fmtRate(m551["adjusted_score"]) : "N/A"],
+      [
+        "LT National Avg. for Hospitalization",
+        nationAvg
+          ? fmtRate(
+              nationAvg[
+                "number_of_hospitalizations_per_1000_longstay_resident_days"
+              ],
+            )
+          : "N/A",
+      ],
+      [
+        "LT State Avg. for Hospitalization",
+        stateAvg
+          ? fmtRate(
+              stateAvg[
+                "number_of_hospitalizations_per_1000_longstay_resident_days"
+              ],
+            )
+          : "N/A",
+      ],
+      ["ED Visit", m552 ? fmtRate(m552["adjusted_score"]) : "N/A"],
+      [
+        "LT ED Visits National Avg.",
+        nationAvg
+          ? fmtRate(
+              nationAvg[
+                "number_of_outpatient_emergency_department_visits_per_1000_l_de9d"
+              ],
+            )
+          : "N/A",
+      ],
+      [
+        "LT ED Visits State Avg.",
+        stateAvg
+          ? fmtRate(
+              stateAvg[
+                "number_of_outpatient_emergency_department_visits_per_1000_l_de9d"
+              ],
+            )
+          : "N/A",
+      ],
+    ];
+
+    const tableRows = rows.map(
+      ([label, value]) =>
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 50, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  children: [new TextRun({ text: label, bold: true })],
+                }),
+              ],
+            }),
+            new TableCell({
+              width: { size: 50, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  children: [new TextRun({ text: String(value) })],
+                }),
+              ],
+            }),
+          ],
+        }),
+    );
+
+    // Medicare Profile row with clickable hyperlink
+    const medicareUrl = `https://www.medicare.gov/care-compare/details/nursing-home/${ccn}`;
+    const medicareRow = new TableRow({
+      children: [
+        new TableCell({
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: "Medicare Profile", bold: true })],
+            }),
+          ],
+        }),
+        new TableCell({
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              children: [
+                new ExternalHyperlink({
+                  link: medicareUrl,
+                  children: [
+                    new TextRun({
+                      text: "View on Medicare.gov",
+                      style: "Hyperlink",
+                      color: "0563C1",
+                      underline: { type: "single" },
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            // Logo at top
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new ImageRun({
+                  data: logoArrayBuffer,
+                  transformation: { width: 200, height: 60 },
+                  type: "webp",
+                }),
+              ],
+            }),
+            new Paragraph({ text: "" }),
+            new Paragraph({
+              text: "FACILITY ASSESSMENT SNAPSHOT",
+              heading: "Heading2",
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({
+              text: state,
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({ text: "" }),
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [...tableRows, medicareRow],
+            }),
+          ],
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, `Facility_Assessment_${ccn}.docx`);
+  };
   const fmt = (val, decimals = 2) =>
     val !== undefined && val !== null && val !== ""
       ? parseFloat(val).toFixed(decimals) + "%"
@@ -584,6 +807,13 @@ function App() {
           </div>
           <button onClick={downloadPDF} className="pdf-btn">
             ⬇ Download PDF
+          </button>
+          <button
+            onClick={downloadWord}
+            className="pdf-btn"
+            style={{ backgroundColor: "#2b579a", marginTop: "10px" }}
+          >
+            📄 Download Word Doc
           </button>
         </div>
       )}
