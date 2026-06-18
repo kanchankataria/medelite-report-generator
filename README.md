@@ -169,6 +169,15 @@ The application is fully responsive and works on:
 The layout automatically adjusts for smaller screens — the form stacks vertically,
 buttons become full width, and the report table scrolls horizontally on small devices.
 
+## 13.📎 Sample Output Files
+
+View sample generated reports in the `/samples` folder:
+
+- [Sample PDF Report](./samples/Facility_Assessment_686123.pdf)
+- [Sample Word Doc Report](./samples/Facility_Assessment_686123.docx)
+- [Sample PDF Report](./samples/Facility_Assessment_055289.pdf)
+- [Sample Word Doc Report](./samples/Facility_Assessment_055289.docx)
+
 ---
 
 ## 🗂️ Data Sources
