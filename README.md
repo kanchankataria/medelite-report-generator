@@ -211,8 +211,6 @@ View sample generated reports in the `/samples` folder:
 
 ## 🏗️ Tech Stack
 
-## 🏗️ Tech Stack
-
 | Technology                    | Purpose                           |
 | ----------------------------- | --------------------------------- |
 | React 18                      | Frontend UI framework             |
@@ -246,8 +244,6 @@ http://localhost:5173
 ```
 
 ---
-
-## 📋 How to Use the App
 
 ## 📋 How to Use the App
 
@@ -325,6 +321,8 @@ creating clickable hyperlinks inside table cells.
 - Fetched the logo via fetch() and converted to ArrayBuffer
 - Used ExternalHyperlink inside TableCell for the Medicare Profile link
 - Result: A fully formatted .docx file with logo, table, and clickable link
+
+---
 
 ### Challenge 6: State Averages Showing Same Value for All Facilities
 
