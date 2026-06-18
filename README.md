@@ -89,7 +89,15 @@ not available in any public database:
 - Custom page size ensures the entire report is never cut off
 - PDF filename includes the CCN (e.g. Facility_Assessment_686123.pdf)
 
-#### 6. Medicare Source Hyperlink
+#### 6. Word Document Export (.docx)
+- Additional "Download Word Doc" button generates an editable Word document
+- Uses the docx library to create a properly formatted .docx file
+- Includes the INFINITE logo image at the top of the document
+- All facility data and hospitalization metrics included in a clean table
+- Medicare Profile row includes a clickable hyperlink to Medicare.gov
+- File downloads with CCN in filename (e.g. Facility_Assessment_686123.docx)
+
+#### 7. Medicare Source Hyperlink
 
 - Every generated PDF includes a clickable "View on Medicare.gov" link
 - The URL is dynamically generated using the searched CCN
@@ -98,7 +106,7 @@ not available in any public database:
   updates to: https://www.medicare.gov/care-compare/details/nursing-home/055289
 - This ensures every report links back to the correct official CMS source
 
-#### 7. Deployment
+#### 8. Deployment
 
 - Application is deployed on Vercel with automatic deployments from GitHub
 - Every git push to main triggers a new Vercel deployment
@@ -108,7 +116,7 @@ not available in any public database:
 
 ### Bonus Features (Optional - All Implemented)
 
-#### 8. All 12 Hospitalization/ED Metrics from CMS Claims API
+#### 9. All 12 Hospitalization/ED Metrics from CMS Claims API
 
 The app fetches and displays all 12 hospitalization and emergency department
 metrics directly from the CMS Medicare Claims Quality Measures dataset (ID: ijh5-nb2v):
@@ -134,7 +142,7 @@ metrics directly from the CMS Medicare Claims Quality Measures dataset (ID: ijh5
 State and national averages are fetched from the CMS State & US Averages
 dataset (ID: xcdc-v8bm) and automatically update based on the facility's state.
 
-#### 9. Color-Coded Star Ratings
+#### 10. Color-Coded Star Ratings
 
 - Overall Star Rating, Health Inspection, Staffing, and Quality of Resident Care
   are displayed with color coding:
@@ -143,7 +151,7 @@ dataset (ID: xcdc-v8bm) and automatically update based on the facility's state.
   - 🔴 Red = 1-2 stars (poor performance)
 - Overall star rating also shows star emoji icons (⭐⭐⭐⭐⭐)
 
-#### 10. Performance Indicators
+#### 11. Performance Indicators
 
 - Each facility hospitalization metric is compared to the national average
 - Visual emoji indicators show performance at a glance:
@@ -151,14 +159,14 @@ dataset (ID: xcdc-v8bm) and automatically update based on the facility's state.
   - ⚠️ = Facility performing WORSE than national average
   - ➡️ = Same as national average
 
-#### 11. Advanced Error Handling
+#### 12. Advanced Error Handling
 
 - If an invalid CCN is entered, a friendly error message appears
 - Error box includes a helpful tip with a clickable link to medicare.gov/care-compare
   so users can find the correct CCN easily
 - Network errors are caught and displayed cleanly
 
-#### 12. Mobile Responsive
+#### 13. Mobile Responsive
 
 The application is fully responsive and works on:
 
@@ -169,7 +177,7 @@ The application is fully responsive and works on:
 The layout automatically adjusts for smaller screens — the form stacks vertically,
 buttons become full width, and the report table scrolls horizontally on small devices.
 
-## 13.📎 Sample Output Files
+## 14.📎 Sample Output Files
 
 View sample generated reports in the `/samples` folder:
 
@@ -287,7 +295,18 @@ const pdf = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
 
 ---
 
-### Challenge 5: State Averages Showing Same Value for All Facilities
+### Challenge 5: Word Document Export with Logo
+**Problem:** Generating a Word document from React requires converting the 
+logo image to an ArrayBuffer format that the docx library can embed, and 
+creating clickable hyperlinks inside table cells.
+
+**Solution:** 
+- Used the docx library with ImageRun to embed the logo
+- Fetched the logo via fetch() and converted to ArrayBuffer
+- Used ExternalHyperlink inside TableCell for the Medicare Profile link
+- Result: A fully formatted .docx file with logo, table, and clickable link
+
+### Challenge 6: State Averages Showing Same Value for All Facilities
 
 **Problem:** State averages were not updating when different CCNs were searched —
 every facility showed the same state average regardless of its actual state.
