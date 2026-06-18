@@ -8,9 +8,19 @@ generate professional facility assessment reports for any skilled nursing home i
 Instead of manually searching through multiple government databases and copying data into
 spreadsheets, a user simply types a facility's CCN (CMS Certification Number) and the app
 automatically fetches all public data, combines it with internal operational inputs, and
-produces a polished downloadable PDF report in seconds.
+produces a polished downloadable report in seconds.
 
-**Built with:** React + Vite, jsPDF, html2canvas, deployed on Vercel
+**Key Highlights:**
+
+- 🔍 Instant lookup for any of 15,000+ US nursing homes using CMS public data
+- 📊 Visual star rating cards with color-coded performance indicators
+- 📄 One-click PDF export with clickable Medicare hyperlink
+- 📝 Word Document (.docx) export with logo and clickable links
+- 📈 All 12 hospitalization/ED metrics with state and national averages
+- ✅⚠️ Performance indicators comparing facility vs national benchmarks
+- 📱 Fully mobile responsive
+
+**Built with:** React + Vite, jsPDF, html2canvas, docx, file-saver, deployed on Vercel
 
 ---
 
@@ -90,6 +100,7 @@ not available in any public database:
 - PDF filename includes the CCN (e.g. Facility_Assessment_686123.pdf)
 
 #### 6. Word Document Export (.docx)
+
 - Additional "Download Word Doc" button generates an editable Word document
 - Uses the docx library to create a properly formatted .docx file
 - Includes the INFINITE logo image at the top of the document
@@ -200,14 +211,18 @@ View sample generated reports in the `/samples` folder:
 
 ## 🏗️ Tech Stack
 
-| Technology                    | Purpose                          |
-| ----------------------------- | -------------------------------- |
-| React 18                      | Frontend UI framework            |
-| Vite                          | Build tool and dev server        |
-| jsPDF                         | PDF generation                   |
-| html2canvas                   | HTML to image conversion for PDF |
-| Vercel                        | Hosting and deployment           |
-| CMS Provider Data Catalog API | Public nursing home data         |
+## 🏗️ Tech Stack
+
+| Technology                    | Purpose                           |
+| ----------------------------- | --------------------------------- |
+| React 18                      | Frontend UI framework             |
+| Vite                          | Build tool and dev server         |
+| jsPDF                         | PDF generation                    |
+| html2canvas                   | HTML to image conversion for PDF  |
+| docx                          | Word document generation          |
+| file-saver                    | Trigger file downloads in browser |
+| Vercel                        | Hosting and deployment            |
+| CMS Provider Data Catalog API | Public nursing home data          |
 
 ---
 
@@ -234,11 +249,14 @@ http://localhost:5173
 
 ## 📋 How to Use the App
 
+## 📋 How to Use the App
+
 1. **Enter a CCN** — Type any valid 6-digit nursing home CCN in the input box
 2. **Click "Fetch Facility Data"** — Wait 3-6 seconds for CMS API to respond
 3. **Fill in Internal Details** — Enter EMR, census, patient type, and Medelite history
-4. **Click "Download PDF"** — Report downloads instantly to your computer
-5. **View on Medicare.gov** — Click the link in the PDF to see the official CMS profile
+4. **Click "Download PDF"** — PDF report downloads instantly to your computer
+5. **Click "Download Word Doc"** — Editable .docx report downloads instantly
+6. **View on Medicare.gov** — Click the link in PDF or Word Doc to see official CMS profile
 
 ---
 
@@ -296,11 +314,13 @@ const pdf = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
 ---
 
 ### Challenge 5: Word Document Export with Logo
-**Problem:** Generating a Word document from React requires converting the 
-logo image to an ArrayBuffer format that the docx library can embed, and 
+
+**Problem:** Generating a Word document from React requires converting the
+logo image to an ArrayBuffer format that the docx library can embed, and
 creating clickable hyperlinks inside table cells.
 
-**Solution:** 
+**Solution:**
+
 - Used the docx library with ImageRun to embed the logo
 - Fetched the logo via fetch() and converted to ArrayBuffer
 - Used ExternalHyperlink inside TableCell for the Medicare Profile link
